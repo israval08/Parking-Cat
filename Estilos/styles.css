@@ -1,0 +1,319 @@
+/* Estilos generales */
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: rgb(240, 240, 247);
+
+}
+
+/* Estilos para el header */
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #fff; /* Color de fondo oscuro */
+    color: rgb(3, 3, 82);
+    height: 20vh; /* Ocupa la mitad de la pantalla */
+    font-family: 'Roboto', sans-serif;
+    position: relative;
+    overflow: hidden; /* Asegura que las letras no se vean fuera del contenedor */
+    padding: 2px; /* Agrega un padding para pantallas pequeñas */
+}
+
+header .container {
+    position: relative;
+    max-width: 70%; /* Limita el ancho máximo para que no ocupe toda la pantalla */
+}
+
+header h1 {
+   
+    font-size: 2.3em; /* Ajusta el tamaño para pantallas grandes */
+    margin-top: 0;
+    opacity: 0; /* Inicia invisible */
+    animation: fadeIn 2s ease-in-out forwards, slideIn 1s ease-out forwards; /* Animaciones combinadas */
+}
+
+header p {
+    font-size: 1.2em; /* Ajusta el tamaño para pantallas grandes */
+    margin: 20px 0 0;
+    opacity: 0; /* Inicia invisible */
+    animation: fadeIn 3s ease-in-out forwards 1s, slideIn 1.5s ease-out forwards 1s; /* Animaciones con retraso */
+}
+
+/* Media Queries para diseño responsivo */
+@media (max-width: 768px) {
+    header {
+        height: 40vh; /* Reduce la altura del encabezado en pantallas medianas */
+        padding: 15px; /* Reduce el padding */
+    }
+
+    header h1 {
+        font-size: 2em; /* Reduce el tamaño de la fuente en pantallas medianas */
+    }
+
+    header p {
+        font-size: 1em; /* Reduce el tamaño de la fuente en pantallas medianas */
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        height: 10vh; /* Reduce aún más la altura del encabezado en pantallas pequeñas */
+        padding: 10px; /* Reduce el padding */
+    }
+
+    header h1 {
+        font-size: 1.9em; /* Reduce el tamaño de la fuente en pantallas pequeñas */
+    }
+
+    header p {
+        font-size: 2em; /* Reduce el tamaño de la fuente en pantallas pequeñas */
+    }
+}
+
+/* Definición de las animaciones */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateY(30px); /* Inicia desplazado hacia abajo */
+    }
+    100% {
+        transform: translateY(0); /* Termina en su posición original */
+    }
+}
+
+
+.container {
+    max-width: 800px; /* Ajusta el ancho máximo según tus necesidades */
+    margin: 0 auto; /* Centra el contenedor horizontalmente */
+    text-align: center; /* Centra el texto dentro del contenedor */
+}
+
+.navbar {
+    background: rgb(6, 6, 59);
+    color: rgb(3, 7, 78);
+    text-shadow: 1px 1px 2px black;
+    padding: 20px;
+    height: 70px;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.navbar .logo img {
+    height: 100px;
+}
+
+.navbar a {
+    color: #e4d4d4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-size: 1.2em;
+    padding: 4px 10px;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    background-color: rgb(19, 19, 88);
+    color: white;
+}
+
+.hamburger-menu {
+    
+    display: none; /* Oculto inicialmente */
+    font-size: 2em;
+    cursor: pointer;
+    color: white;
+    background: rgb(6, 6, 59);
+    border: none;
+}
+
+footer {
+    background-color: rgb(3, 3, 82);
+    color: white;
+    text-align: center;
+    padding: 10px 5px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translateY(100%);
+    transition: transform 0.5s ease;
+    z-index: 10;
+}
+
+.footer-visible {
+    transform: translateY(0);
+}
+
+.footer-toggle-button {
+    display: block;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    background-color: #666;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 11;
+}
+
+
+.recursos ul {
+    list-style: none; /* Elimina els punts de la llista */
+    padding: 0;
+    margin: 0;
+}
+
+.recursos li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+/* Media Queries para diseño responsivo */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: block; /* Mostrar el menú de hamburguesa en pantallas pequeñas */
+    }
+
+    .navbar {
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .nav-links {
+        display: none; /* Oculto inicialmente */
+        flex-direction: column;
+        align-items: flex-start;
+        position: absolute;
+        left: 30px;
+        width: 70%;
+        background-color: rgb(6, 6, 59); /* Fondo para los enlaces desplegados */
+    }
+
+    .nav-links.show {
+        display: flex; /* Se muestra cuando se hace clic en el menú hamburguesa */
+    }
+
+    .nav-links a {
+    display: block;
+    width: 40%; /* Este valor controla el ancho del enlace, puedes ajustarlo si es necesario */
+    padding: 10px 20px;
+    text-align: left;
+    border-top: 1px solid rgb(3, 3, 63);
+    font-size: 0.9em; /* Ajusta este valor para hacer el texto más pequeño */
+}
+
+
+    .logo {
+        position: absolute;
+        right: 10px; /* Coloca el logo a la derecha en pantallas pequeñas */
+    }
+}
+
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 18px; /* Ajustar tamaño de fuente en dispositivos muy pequeños */
+    }
+}
+
+.gif-container {
+    width: 80%; /* Ocupa el 80% del ancho disponible, puedes ajustarlo */
+    max-width: 500px; /* Ancho máximo para evitar que se haga demasiado grande */
+    margin: 0 auto; /* Centrar el contenedor */
+    margin-top: 2px;
+}
+
+/* Estilo para el contenedor general */
+.container2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80vh; /* Ocupa toda la altura de la pantalla */
+    padding: 20px;
+    padding-top: 5px; /* Elimina el relleno superior si lo hay */
+    margin-bottom: 30px;
+    
+}
+
+/* Contenedor de la mitad izquierda */
+.left-content {
+    width: 50%; /* Ocupa la mitad izquierda */
+    padding-right: 20px; /* Espacio entre el texto y el logo */
+    font-size: 1.2em; /* Tamaño del texto */
+    line-height: 1.5;
+}
+
+/* Contenedor de la mitad derecha (Logo) */
+.right-content {
+    width: 50%; /* Ocupa la mitad derecha */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo para la imagen del logo */
+.logo-container img {
+    width: 80%; /* Ajusta el ancho según sea necesario */
+    max-width: 500px; /* Ancho máximo para el logo */
+    height: auto; /* Mantiene la proporción */
+    display: block;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .container2 {
+        flex-direction: column; /* Coloca los contenedores en columnas */
+    }
+
+    .left-content, .right-content {
+        width: 100%; /* Los contenedores ocupan el 100% del ancho */
+        text-align: center; /* Centrar el texto en la vista móvil */
+    }
+
+    .logo-container img {
+        width: 60%; /* Ajusta el ancho del logo en pantallas pequeñas */
+        max-width: 200px; /* Reduce el ancho máximo en pantallas pequeñas */
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-container img {
+        width: 80%; /* Aumenta el ancho del logo en pantallas muy pequeñas */
+        max-width: 150px; /* Reduce el ancho máximo en pantallas muy pequeñas */
+    }
+}
+
+/* Estilo para la sección de texto */
+.left-content {
+    width: 50%; /* Ocupa la mitad izquierda */
+    padding-right: 20px; /* Espacio entre el texto y el logo */
+    font-size: 1.1em; /* Ajusta el tamaño del texto */
+    line-height: 1.6; /* Espacio entre líneas para mejorar la legibilidad */
+    color: #333; /* Color del texto */
+}
+
+/* Estilo responsivo */
+@media (max-width: 768px) {
+    .left-content, .right-content {
+        width: 100%; /* Ambos contenedores ocupan el 100% del ancho */
+        text-align: center; /* Centrar el texto en la vista móvil */
+    }
+}

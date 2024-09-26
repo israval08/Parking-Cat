@@ -1,0 +1,71 @@
+html {
+    --s: 50px; /* control the size */
+    --c1: #0B2E59;
+    --c2: #0D6759;
+    
+    background:
+      conic-gradient(at 25% 25%,#0000 75%,var(--c1) 0) var(--s) var(--s),
+      repeating-conic-gradient(at 25% 25%,var(--c1) 0 25%,var(--c2) 0 50%);
+    background-size: calc(2*var(--s)) calc(2*var(--s));
+    animation: g13 5s infinite;
+  }
+  @keyframes g13 {
+    12.5% {
+      background-position: calc(2*var(--s)) 0,0 0;
+    }
+    23%,27% {
+      background-position: calc(3*var(--s)) calc(-1*var(--s)),0 0;
+    }
+    35.5%,39.5% {
+      background-position: calc(4*var(--s)) 0,0 0;
+    }
+    48%,52% {
+      background-position: calc(5*var(--s)) var(--s),0 0;
+    }
+    60.5%,64.5% {
+      background-position: calc(4*var(--s)) calc(2*var(--s)),0 0;
+    }
+    73%,77% {
+      background-position: calc(3*var(--s)) calc(3*var(--s)),0 0;
+    }
+    85.5%,89.5% {
+      background-position: calc(2*var(--s)) calc(2*var(--s)),0 0;
+    }
+  }
+
+  html {
+    --s: 50px; /* control the size */
+    --c1: #0B2E59;
+    --c2: #0D6759;
+    
+    background:
+      conic-gradient(at 25% 25%,#0000 75%,var(--c1) 0) var(--s) var(--s),
+      repeating-conic-gradient(at 25% 25%,var(--c1) 0 25%,var(--c2) 0 50%);
+    background-size: calc(2*var(--s)) calc(2*var(--s));
+    animation: g13 5s infinite;
+  }
+  @keyframes g13 {
+    12.5% {
+      background-position: calc(2*var(--s)) 0,0 0;
+    }
+    23%,27% {
+      background-position: calc(3*var(--s)) calc(-1*var(--s)),0 0;
+    }
+    35.5%,39.5% {
+      background-position: calc(4*var(--s)) 0,0 0;
+    }
+    48%,52% {
+      background-position: calc(5*var(--s)) var(--s),0 0;
+    }
+    60.5%,64.5% {
+      background-position: calc(4*var(--s)) calc(2*var(--s)),0 0;
+    }
+    73%,77% {
+      background-position: calc(3*var(--s)) calc(3*var(--s)),0 0;
+    }
+    85.5%,89.5% {
+      background-position: calc(2*var(--s)) calc(2*var(--s)),0 0;
+    }
+  }
+  
+ 

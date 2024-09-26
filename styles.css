@@ -1,0 +1,140 @@
+/* Estilos básicos */
+html, body {
+    height: 100%; /* Asegura que la página ocupe toda la altura disponible */
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333; /* Color de texto general */
+    background-color: rgb(240, 240, 247); /* Fondo general Azul Suave */
+}
+
+/* Estilización del Navbar */
+.navbar {
+    background: rgb(6, 6, 59);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    padding: 20px 20px; /* Aumenta el padding para más altura */
+    /* o también puedes usar: */
+    height: 70px; /* Altura fija */
+    font-family: 'Roboto', sans-serif; /* Cambiar la fuente */
+    
+}
+
+
+
+.navbar a {
+    color: #e4d4d4; /* Blanco puro */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Sombra más pronunciada */
+    font-size: 1.2em; /* Ajustar el tamaño de fuente según sea necesario */
+    padding: 8px 15px; /* Aumentar el espaciado entre los enlaces si están muy juntos */
+    margin: 0 10px; /* Añadir margen para más espacio entre enlaces */
+    display: flex; /* Flexbox para alinear elementos */
+    flex-direction: row; /* Dirección de los ítems */
+    justify-content: center; /* Centrado horizontal */
+    align-items: center; /* Centrado vertical */
+    
+}
+
+
+.navbar a:hover {
+    background-color: rgb(19, 19, 88); 
+    color: whitesmoke;
+}
+
+/* Estilización del menú de hamburguesa */
+.hamburger-menu {
+    display: none; /* Oculto inicialmente, visible en media query más abajo */
+    font-size: 2em;
+    cursor: pointer;
+}
+
+/* Estilos del Header */
+header {
+    background-color:rgb(247, 242, 242); 
+    padding: 2px;
+    text-align: center;
+}
+
+/* Estilos del Footer */
+footer {
+    background-color: rgb(3, 3, 82); 
+    color: white;
+    text-align: center;
+    padding: 10px 5px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translateY(100%); /* Inicia oculto */
+    transition: transform 0.5s ease; /* Transición suave */
+    z-index: 10;
+}
+
+.footer-visible {
+    transform: translateY(0); /* Muestra el footer */
+}
+
+.footer-toggle-button {
+    display: block;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    background-color: #666; /* Botón gris */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    z-index: 11; /* Asegura que el botón esté sobre el footer */
+}
+
+/* Media Queries para diseño responsivo */
+/* Media Queries para diseño responsivo */
+/* Estilos básicos para la navbar */
+.navbar {
+    display: flex; /* Flexbox para alinear elementos */
+    flex-direction: row; /* Dirección de los ítems */
+    justify-content: center; /* Centrado horizontal */
+    align-items: center; /* Centrado vertical */
+    /* Resto de tus estilos */
+}
+
+/* Media Queries para diseño responsivo */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: block; /* Mostrar el menú de hamburguesa en pantallas pequeñas */
+    }
+
+    .navbar {
+        flex-direction: column; /* Cambia la orientación cuando se active */
+        display: none; /* Ocultar hasta que se active */
+        width: 100%; /* Asegura que ocupe el ancho completo */
+    }
+
+    .navbar.open {
+
+        display: flex; /* Mostrar cuando se activa el menú de hamburguesa */
+    }
+    
+    
+
+    .navbar a {
+        display: block; /* Asegúrate de que cada enlace ocupe su propia línea */
+        width: 100%; /* Asegura que los enlaces ocupen el ancho completo */
+        text-align: center; /* Centra el texto de los enlaces */
+        font-size: 1em; /* Reduce el tamaño del texto */
+        padding: 8px 10px; /* Ajusta el padding si es necesario */
+        margin: 0 5px; /* Reduce los márgenes lateralmente */
+    }
+    
+}
+
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 18px; /* Ajustar tamaño de fuente en dispositivos muy pequeños */
+    }
+}

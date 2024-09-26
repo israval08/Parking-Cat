@@ -1,0 +1,70 @@
+/* Estilo básico para la barra de navegación */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Logo de la barra de navegación */
+.logo img {
+    height: 40px; /* Ajusta el tamaño según sea necesario */
+}
+
+/* Enlaces de la barra de navegación */
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Menú hamburguesa */
+.hamburger-menu {
+    display: none; /* Oculta el menú hamburguesa en pantallas grandes */
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Estilo del menú desplegable */
+.nav-links {
+    display: flex;
+}
+
+.nav-links a {
+    display: block;
+    padding: 10px;
+}
+
+/* Mostrar el menú hamburguesa y ocultar enlaces en pantallas pequeñas */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* Oculta los enlaces por defecto */
+        position: absolute;
+        top: 60px; /* Ajusta según la altura de la navbar */
+        left: 0;
+        width: 100%;
+        background-color: #007bff;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .nav-links.show {
+        display: flex; /* Muestra los enlaces cuando se activa el menú */
+    }
+
+    .hamburger-menu {
+        display: block; /* Muestra el menú hamburguesa en pantallas pequeñas */
+    }
+}
