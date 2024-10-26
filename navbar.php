@@ -12,7 +12,7 @@
     <div class="hamburger-menu" aria-label="Toggle menu">☰</div>
     <nav class="navbar">
         <div class="logo">
-            <img src="./imagenes/parking_cat.jpg" alt="Logo">
+            <img src="./imagenes/parking cat.jpg" alt="Logo">
         </div>
         <div class="nav-links">
             <a href="index.php">Home</a>

@@ -1,51 +1,31 @@
 <?php
-session_start();
-if (!isset($_SESSION['rut']) || $_SESSION['tipo_usuario'] != 'administrador') {
-    echo "Acceso denegado.";
-    exit();
-}
+include 'config.php'; // Conexión a la base de datos
 
-// Conexión a la base de datos
-include 'config.php';
+if (isset($_POST['rut']) && isset($_POST['nombre']) && isset($_POST['email']) && isset($_POST['tipo_usuario'])) {
+    $rut = $_POST['rut'];
+    $nombre = $_POST['nombre'];
+    $email = $_POST['email'];
+    $tipo_usuario = $_POST['tipo_usuario'];
 
-try {
-    if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['rut'])) {
-        $rut = $_GET['rut'];
-
-        // Consulta para obtener los datos del usuario
-        $sql = "SELECT * FROM usuarios WHERE rut = ?";
+    // Validar que los datos no estén vacíos
+    if (!empty($rut) && !empty($nombre) && !empty($email) && !empty($tipo_usuario)) {
+        // Preparar la consulta para actualizar el usuario
+        $sql = "UPDATE usuarios SET nombre_completo = ?, correo_electronico = ?, tipo_usuario = ? WHERE rut = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('s', $rut);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $stmt->bind_param("ssss", $nombre, $email, $tipo_usuario, $rut);
 
-        if ($result->num_rows == 1) {
-            $row = $result->fetch_assoc();
-
-            // Mostrar el formulario prellenado con los datos del usuario
-            echo '<form method="POST" action="procesar_actualizar_usuario.php">';
-            echo '<input type="hidden" name="rut" value="' . $row['rut'] . '">';
-            echo 'Nombre completo: <input type="text" name="nombre_completo" value="' . $row['nombre_completo'] . '"><br>';
-            echo 'Correo electrónico: <input type="email" name="correo_electronico" value="' . $row['correo_electronico'] . '"><br>';
-            echo 'Tipo de usuario: <select name="tipo_usuario">';
-            echo '<option value="parqueador" ' . ($row['tipo_usuario'] == 'parqueador' ? 'selected' : '') . '>Parqueador</option>';
-            echo '<option value="encargado" ' . ($row['tipo_usuario'] == 'encargado' ? 'selected' : '') . '>Encargado</option>';
-            echo '<option value="administrador" ' . ($row['tipo_usuario'] == 'administrador' ? 'selected' : '') . '>Administrador</option>';
-            echo '</select><br>';
-            echo 'Estado: <select name="estado">';
-            echo '<option value="activo" ' . ($row['estado'] == 'activo' ? 'selected' : '') . '>Activo</option>';
-            echo '<option value="inactivo" ' . ($row['estado'] == 'inactivo' ? 'selected' : '') . '>Inactivo</option>';
-            echo '</select><br>';
-            echo '<input type="submit" value="Actualizar">';
-            echo '</form>';
+        if ($stmt->execute()) {
+            echo "Usuario actualizado correctamente.";
         } else {
-            echo "Error: Usuario no encontrado.";
+            echo "Error al actualizar el usuario: " . $stmt->error;
         }
 
         $stmt->close();
-    } 
-} catch (Exception $e) {
-    echo "Error al cargar los datos del usuario: " . $e->getMessage();
+    } else {
+        echo "Error: Todos los campos son obligatorios.";
+    }
+} else {
+    echo "Error: Parámetros no recibidos.";
 }
 
 $conn->close();

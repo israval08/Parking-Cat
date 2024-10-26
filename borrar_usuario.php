@@ -1,28 +1,30 @@
 <?php
-session_start();
-if (!isset($_SESSION['rut']) || $_SESSION['tipo_usuario'] != 'administrador') {
-    echo "Acceso denegado.";
-    exit();
-}
+include 'config.php'; // Conexión a la base de datos
 
-// Conexión a la base de datos
-include 'config.php';
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if (isset($_POST['rut'])) {
+    // Recibir el RUT enviado por AJAX
     $rut = $_POST['rut'];
 
-    // Eliminar el usuario
-    $sql = "DELETE FROM usuarios WHERE rut = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('s', $rut);
+    // Verificar que el RUT no esté vacío
+    if (!empty($rut)) {
+        // Preparar la consulta para borrar el usuario
+        $sql = "DELETE FROM usuarios WHERE rut = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $rut);
 
-    if ($stmt->execute()) {
-        echo "Usuario eliminado con éxito.";
+        if ($stmt->execute()) {
+            echo "Usuario eliminado correctamente.";
+        } else {
+            echo "Error al eliminar el usuario: " . $stmt->error;
+        }
+
+        $stmt->close();
     } else {
-        echo "Error al eliminar usuario: " . $conn->error;
+        echo "Error: El RUT no puede estar vacío.";
     }
-
-    $stmt->close();
-    $conn->close();
+} else {
+    echo "Error: Parámetro 'RUT' no recibido.";
 }
+
+$conn->close();
 ?>

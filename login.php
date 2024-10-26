@@ -5,6 +5,9 @@ session_start();
 // Conexión a la base de datos
 include 'config.php'; // Aquí debes configurar tu conexión a la base de datos
 include 'navbar.php';
+
+$error_message = ""; // Variable para almacenar mensajes de error
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtener los datos del formulario
     $rut = $_POST['rut']; // El RUT debe ser ingresado con puntos y guiones
@@ -28,35 +31,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['nombre_completo'] = $usuario['nombre_completo'];
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
 
-            // Redirigir al administrador a la página de trabajo
+            // Redirigir al usuario según su rol
             if ($usuario['tipo_usuario'] == 'administrador') {
                 header("Location: admin_dashboard.php");
                 exit();
+            } elseif ($usuario['tipo_usuario'] == 'parqueador') {
+                header("Location: dashboard_parqueador.php");
+                exit();
+            } elseif ($usuario['tipo_usuario'] == 'encargado') {
+                // Redirigir al dashboard del encargado cuando lo implementes
+                header("Location: encargado_dashboard.php"); 
+                exit();
+            } else {
+                $error_message = "Rol de usuario no válido.";
             }
         } else {
-            echo "Contraseña incorrecta";
+            $error_message = "Contraseña incorrecta";
         }
     } else {
-        echo "No se encontró un usuario con ese RUT";
+        $error_message = "No se encontró un usuario con ese RUT";
     }
 }
 ?>
 
-<!-- Formulario de login -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="./Estilos/login.css"> <!-- Enlace al archivo CSS -->
-   
+    <link rel="stylesheet" href="./Estilos/login.css"> 
 </head>
 <body>
-  <!-- Incluir el archivo navbar.php -->
-
-    
-  <div class="container3">
+    <div class="container3">
         <form class="login-form" action="" method="POST" onsubmit="formatRut()">
             <h2>Iniciar sesión</h2>
             <div class="form-group">
@@ -67,8 +74,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <input type="submit" value="Iniciar sesión" class="btn">
         </form>
+
+        <!-- Mostrar mensaje de error si existe -->
+        <?php if (!empty($error_message)): ?>
+            <p style="color: red;"><?php echo $error_message; ?></p>
+        <?php endif; ?>
     </div>
- 
 
     <script>
         function formatRut() {

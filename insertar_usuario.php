@@ -1,52 +1,53 @@
 <?php
-session_start();
-if (!isset($_SESSION['rut']) || $_SESSION['tipo_usuario'] != 'administrador') {
-    echo "Acceso denegado.";
-    exit();
-}
-?>
-<script>
-    function formatearRUT(input) {
-        let rut = input.value.replace(/\./g, '').replace('-', '');
-        if (rut.length > 1) {
-            rut = rut.slice(0, -1) + '-' + rut.slice(-1); // Agrega el guion
-        }
-        if (rut.length > 4) {
-            rut = rut.slice(0, -5) + '.' + rut.slice(-5); // Agrega el primer punto
-        }
-        if (rut.length > 8) {
-            rut = rut.slice(0, -9) + '.' + rut.slice(-9); // Agrega el segundo punto
-        }
-        input.value = rut;
-    }
-</script>
+include 'config.php'; // Conexión a la base de datos
 
-<h2>Insertar Usuario</h2>
-<form action="procesar_insertar_usuario.php" method="POST">
-    <div>
-        <label for="rut">RUT:</label>
-        <input type="text" id="rut" name="rut" maxlength="12" oninput="formatearRUT(this)" required>
-    </div>
-    <div>
-        <label for="nombre_completo">Nombre Completo:</label>
-        <input type="text" id="nombre_completo" name="nombre_completo" required>
-    </div>
-    <div>
-        <label for="tipo_usuario">Tipo de Usuario:</label>
-        <select id="tipo_usuario" name="tipo_usuario" required>
-            <option value="parqueador">Parqueador</option>
-            <option value="encargado">Encargado</option>
-        </select>
-    </div>
-    <div>
-        <label for="correo_electronico">Correo Electrónico:</label>
-        <input type="email" id="correo_electronico" name="correo_electronico" required>
-    </div>
-    <div>
-        <label for="contrasena">Contraseña:</label>
-        <input type="password" id="contrasena" name="contrasena" required>
-    </div>
-    <div>
-        <button type="submit">Insertar Usuario</button>
-    </div>
-</form>
+// Comprobar si se recibieron los parámetros correctos
+if (isset($_POST['rut']) && isset($_POST['nombre']) && isset($_POST['email']) && isset($_POST['tipo_usuario']) && isset($_POST['contrasena'])) {
+    // Recibir los datos enviados por el formulario
+    $rut = $_POST['rut'];
+    $nombre = $_POST['nombre'];
+    $email = $_POST['email'];
+    $tipo_usuario = $_POST['tipo_usuario'];
+    $contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT); // Encriptar la contraseña
+
+    // Validar que los datos no estén vacíos
+    if (!empty($rut) && !empty($nombre) && !empty($email) && !empty($tipo_usuario)) {
+        // Verificar que no exista un usuario con el mismo RUT o correo
+        $sql_check = "SELECT * FROM usuarios WHERE rut = ? OR correo_electronico = ?";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bind_param("ss", $rut, $email);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
+
+        if ($result_check->num_rows > 0) {
+            echo "Error: Ya existe un usuario con ese RUT o correo electrónico.";
+        } else {
+            // Insertar el nuevo usuario en la base de datos
+            $sql = "INSERT INTO usuarios (rut, nombre_completo, correo_electronico, tipo_usuario, contrasena, estado) 
+                    VALUES (?, ?, ?, ?, ?, 'activo')";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sssss", $rut, $nombre, $email, $tipo_usuario, $contrasena);
+
+            if ($stmt->execute()) {
+                echo "Usuario insertado correctamente.";
+            } else {
+                echo "Error al insertar el usuario: " . $stmt->error;
+            }
+
+            $stmt->close();
+        }
+
+        $stmt_check->close();
+    } else {
+        echo "Error: Todos los campos son obligatorios.";
+    }
+} else {
+    // Depuración: Imprimir los parámetros recibidos
+    echo "Error: Parámetros no recibidos. Detalles de POST: ";
+    echo '<pre>';
+    print_r($_POST);
+    echo '</pre>';
+}
+
+$conn->close();
+?>
