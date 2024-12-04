@@ -27,12 +27,7 @@
                     <button type="submit">Suscribirse</button>
                 </form>
             </div>
-            <div class="footer-section contact">
-                <h4>Contacto</h4>
-                <p>Correo: parkingcat_contacto@parkingcat.com</p>
-                <p>Teléfono: +123 456 7890</p>
-                <p><a href="javascript:void(0);" onclick="openContactForm()">Formulario de Contacto</a></p>
-            </div>
+            
             <script>
                 function openContactForm() {
                     window.open('./recursos/contacto.html', 'ContactForm', 'width=400,height=300');

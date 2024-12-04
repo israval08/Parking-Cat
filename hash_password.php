@@ -1,6 +1,6 @@
 <?php
 // La contraseña que quieres cifrar
-$contraseña = 'Felipeaurora05$';
+$contraseña = '123456';
 
 // Genera el hash de la contraseña
 $hash = password_hash($contraseña, PASSWORD_DEFAULT);

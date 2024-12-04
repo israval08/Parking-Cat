@@ -73,7 +73,11 @@ if (isset($_POST['registrar_estacionamiento'])) {
     // Validar la patente en el formato chileno correcto: AA1234 o AAAA12
     if (preg_match('/^[A-Z]{2}\d{4}$|^[A-Z]{4}\d{2}$/', $patente)) {
         $id_calle = $_POST['id_calle'];
-        $id_tarifa = $_POST['id_tarifa'];
+
+        // Obtener la última tarifa registrada
+        $sql_tarifa = "SELECT id FROM tarifas ORDER BY id DESC LIMIT 1";
+        $result_tarifa = $conn->query($sql_tarifa);
+        $id_tarifa = $result_tarifa->fetch_assoc()['id'];
 
         $sql = "INSERT INTO estacionamientos (patente, rut_parqueador, id_calle, id_tarifa, hora_entrada, estado, id_jornada) 
                 VALUES (?, ?, ?, ?, NOW(), 'activo', ?)";
@@ -86,7 +90,7 @@ if (isset($_POST['registrar_estacionamiento'])) {
     }
 }
 
-// --- Calcular monto de estacionamiento ---
+// --- Consultar estacionamiento ---
 if (isset($_POST['calcular_monto'])) {
     $patente = $_POST['patente_cobro'];
 
@@ -101,33 +105,55 @@ if (isset($_POST['calcular_monto'])) {
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+        $_SESSION['id_estacionamiento'] = $row['id'];
         $monto = min($row['minutos'] * $row['tarifa_minuto'], $row['tarifa_maxima_diaria']);
         $_SESSION['monto_a_pagar'] = $monto;
-        $_SESSION['id_estacionamiento'] = $row['id'];
-        echo "El monto a pagar es: $monto CLP. ¿Desea proceder con el pago?";
+        echo "Estacionamiento activo encontrado para la patente: $patente.<br>Monto a pagar: $monto CLP.<br>";
+        echo '<form method="POST" action="">
+                <button type="submit" name="seguir_estacionamiento">Seguir</button>
+                <button type="submit" name="pagar_estacionamiento">Pagar</button>
+              </form>';
     } else {
         echo "No se encontró un estacionamiento activo para la patente ingresada.";
     }
 }
 
+// --- Seguir estacionamiento ---
+if (isset($_POST['seguir_estacionamiento'])) {
+    echo "El estacionamiento continuará activo.";
+}
+
 // --- Cobrar estacionamiento ---
-if (isset($_POST['cobrar_estacionamiento'])) {
-    if (isset($_SESSION['monto_a_pagar']) && isset($_SESSION['id_estacionamiento'])) {
-        $monto = $_SESSION['monto_a_pagar'];
+if (isset($_POST['pagar_estacionamiento'])) {
+    if (isset($_SESSION['id_estacionamiento'])) {
         $id_estacionamiento = $_SESSION['id_estacionamiento'];
 
-        // Actualizar el estado y monto total del estacionamiento
-        $sql_update = "UPDATE estacionamientos SET hora_salida = NOW(), monto_total = ?, estado = 'completado' WHERE id = ?";
-        $stmt_update = $conn->prepare($sql_update);
-        $stmt_update->bind_param('ii', $monto, $id_estacionamiento);
-        $stmt_update->execute();
+        // Calcular el monto a pagar
+        $sql = "SELECT TIMESTAMPDIFF(MINUTE, hora_entrada, NOW()) AS minutos, tarifas.tarifa_minuto, tarifas.tarifa_maxima_diaria 
+                FROM estacionamientos 
+                INNER JOIN tarifas ON estacionamientos.id_tarifa = tarifas.id
+                WHERE estacionamientos.id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id_estacionamiento);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        unset($_SESSION['monto_a_pagar']);
-        unset($_SESSION['id_estacionamiento']);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $monto = min($row['minutos'] * $row['tarifa_minuto'], $row['tarifa_maxima_diaria']);
+            $_SESSION['monto_a_pagar'] = $monto;
 
-        echo "Pago realizado correctamente. El monto pagado es: $monto CLP.";
-    } else {
-        echo "Debe calcular el monto antes de proceder con el pago.";
+            // Actualizar el estado del estacionamiento a "completado"
+            $sql_update = "UPDATE estacionamientos SET hora_salida = NOW(), monto_total = ?, estado = 'completado' WHERE id = ?";
+            $stmt_update = $conn->prepare($sql_update);
+            $stmt_update->bind_param('ii', $monto, $id_estacionamiento);
+            $stmt_update->execute();
+
+            echo "Pago realizado correctamente. Monto pagado: $monto CLP.";
+            unset($_SESSION['id_estacionamiento']);
+        } else {
+            echo "No se pudo calcular el monto a pagar.";
+        }
     }
 }
 
@@ -278,17 +304,6 @@ $conn->close();
                         ?>
                     </select>
 
-                    <label for="id_tarifa">Tarifa:</label>
-                    <select id="id_tarifa" name="id_tarifa" required>
-                        <?php
-                        $sql = "SELECT id, tarifa_minuto, tarifa_maxima_diaria FROM tarifas";
-                        $result = $conn->query($sql);
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<option value=\"{$row['id']}\">{$row['tarifa_minuto']} por minuto / {$row['tarifa_maxima_diaria']} máximo diario</option>";
-                        }
-                        ?>
-                    </select>
-
                     <button type="submit" name="registrar_estacionamiento">Registrar</button>
                 </form>
             </div>
@@ -297,45 +312,8 @@ $conn->close();
             <form method="POST" action="">
                 <label for="patente-cobro">Patente:</label>
                 <input type="text" id="patente-cobro" name="patente_cobro" required placeholder="Formato: AA1234 o AAAA12">
-                <button type="submit" name="calcular_monto">Calcular Monto</button>
-                <?php if (isset($_SESSION['monto_a_pagar'])): ?>
-                    <p>El monto a pagar es: <?php echo $_SESSION['monto_a_pagar']; ?> CLP</p>
-                    <button type="submit" name="cobrar_estacionamiento">Cobrar Estacionamiento</button>
-                <?php endif; ?>
+                <button type="submit" name="calcular_monto">Consultar Estacionamiento</button>
             </form>
-
-            <h2>Historial de Estacionamientos</h2>
-            <?php
-            $sql = "SELECT estacionamientos.id AS estacionamiento_id, estacionamientos.patente, calles.nombre_calle, tarifas.tarifa_minuto, tarifas.tarifa_maxima_diaria, estacionamientos.hora_entrada, estacionamientos.hora_salida, estacionamientos.monto_total
-                    FROM estacionamientos
-                    INNER JOIN calles ON estacionamientos.id_calle = calles.id
-                    INNER JOIN tarifas ON estacionamientos.id_tarifa = tarifas.id
-                    WHERE estacionamientos.rut_parqueador = ? AND estacionamientos.id_jornada = ?
-                    ORDER BY estacionamientos.hora_entrada DESC";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('si', $rut_parqueador, $_SESSION['id_jornada']);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                echo "<table>";
-                echo "<tr><th>ID</th><th>Patente</th><th>Calle</th><th>Tarifa</th><th>Hora Entrada</th><th>Hora Salida</th><th>Monto Total</th></tr>";
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>{$row['estacionamiento_id']}</td>";
-                    echo "<td>{$row['patente']}</td>";
-                    echo "<td>{$row['nombre_calle']}</td>";
-                    echo "<td>{$row['tarifa_minuto']} por minuto / {$row['tarifa_maxima_diaria']} máximo diario</td>";
-                    echo "<td>{$row['hora_entrada']}</td>";
-                    echo "<td>{$row['hora_salida']}</td>";
-                    echo "<td>{$row['monto_total']}</td>";
-                    echo "</tr>";
-                }
-                echo "</table>";
-            } else {
-                echo "No hay estacionamientos registrados.";
-            }
-            ?>
 
             <h2>Recaudación Total de la Jornada</h2>
             <p>Total recaudado hoy: <?php echo $recaudacion_diaria; ?> CLP</p>
